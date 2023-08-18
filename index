@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class='container'>
+
+<h1 align='center'>Employee Details</h1><br><br>
+
+<form  align='center' id='employeeForm'>
+    <label for="empID">Employee ID:</label>
+   <input type="text" id="empID" name="empID"><br><br>
+    
+    <label for="empName">Employee Name:</label>
+    <input type="text" id="empName" name="empName"><br><br>
+    
+    <label for="salary">Salary:</label>
+    <input type="text" id="salary" name="salary"><br><br>
+    
+    <label for="job">Job:</label>
+    <input type="text" id="job" name="job"><br><br>
+    
+    <button onclick="firstValue()">First</button>
+     <button onclick="nextValue()">Next</button>
+</form>
+</div>
+<script>
+
+
+const xhr = new XMLHttpRequest();
+
+xhr.open('GET', 'http://localhost:8081/Employee/employee', true);
+
+xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        var res = JSON.parse(xhr.responseText);
+        document.getElementById('empID').value = res.empId; 
+        document.getElementById('empName').value = res.empName;
+        document.getElementById('salary').value = res.empSalary;
+        document.getElementById('job').value = res.empJob;
+    }
+};
+
+xhr.send();
+
+function firstValue(){
+	
+	const xhr = new XMLHttpRequest();
+
+	xhr.open('GET', `http://localhost:8081/Employee/EmployeeData?button="first"`, true);
+
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState === 4 && xhr.status === 200) {
+	        var res = JSON.parse(xhr.responseText);
+	        document.getElementById('empID').value = res.empId; 
+	        document.getElementById('empName').value = res.empName;
+	        document.getElementById('salary').value = res.empSalary;
+	        document.getElementById('job').value = res.empJob;
+	    }
+	};
+
+	xhr.send();
+	
+}
+function nextValue(val){
+	
+	console.log("ajay");
+	const xhr = new XMLHttpRequest();
+
+	xhr.open('GET', `http://localhost:8081/Employee/EmployeeData?button="next"`, true);
+
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState === 4 && xhr.status === 200) {
+	        var res = JSON.parse(xhr.responseText);
+	        document.getElementById('empID').value = res.empId; 
+	        document.getElementById('empName').value = res.empName;
+	        document.getElementById('salary').value = res.empSalary;
+	        document.getElementById('job').value = res.empJob;
+	    }
+	};
+
+	xhr.send();
+	
+}
+
+
+</script>
+</body>
+</html>
