@@ -12,21 +12,20 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.google.gson.JsonObject;
 
 @WebServlet("/employee")
-public class EmpServlet extends HttpServlet {
+public class EmployeeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	int index = 0;
 
+	ArrayList<Employee> empList = new ArrayList<>();
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		ArrayList<Employee> empList = new ArrayList<>();
-		System.out.println("hello");
 		try {
 
 			Class.forName("org.postgresql.Driver");
@@ -34,16 +33,13 @@ public class EmpServlet extends HttpServlet {
 					"plf_training_admin", "pff123");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("select * from empp_p");
-			System.out.println("hello");
 
 			while (rs.next()) {
 
 				int num = Integer.parseInt(rs.getString(1));
-				System.out.println(num);
 				String name = rs.getString(2);
 				String job = rs.getString(3);
 				double salary = Double.parseDouble(rs.getString(4));
-				System.out.println(salary);
 				Employee e = new Employee(num, name, salary, job);
 
 				empList.add(e);
@@ -56,18 +52,58 @@ public class EmpServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		HttpSession hsession = request.getSession();
-		hsession.setAttribute("EmployeeList", empList);
-
 		JsonObject json = new JsonObject();
-		json.addProperty("empId", empList.get(0).getId());
-		json.addProperty("empName", empList.get(0).getName());
-		json.addProperty("empSalary", empList.get(0).getSalary());
-		json.addProperty("empJob", empList.get(0).getJob());
+		String click = request.getParameter("click");
 
-		response.setContentType("application/json");
-		response.getWriter().write(json.toString());
+		if (click == null) {
+			json.addProperty("empId", empList.get(0).getId());
+			json.addProperty("empName", empList.get(0).getName());
+			json.addProperty("empSalary", empList.get(0).getSalary());
+			json.addProperty("empJob", empList.get(0).getJob());
 
+			response.setContentType("application/json");
+			response.getWriter().write(json.toString());
+		}
+
+		if ("first".equals(click)) {
+			index = 0;
+			sending(json);
+			response.setContentType("application/json");
+			response.getWriter().write(json.toString());
+
+		} else if ("next".equals(click)) {
+			index++;
+			sending(json);
+			response.setContentType("application/json");
+			response.getWriter().write(json.toString());
+			System.out.println(index);
+
+		} else if ("prev".equals(click)) {
+			if (index < 0) {
+				index = 0;
+			} else {
+				index--;
+			}
+			sending(json);
+			response.setContentType("application/json");
+			response.getWriter().write(json.toString());
+
+		} else if ("last".equals(click)) {
+			index = empList.size() - 1;
+			sending(json);
+			response.setContentType("application/json");
+			response.getWriter().write(json.toString());
+		}
+
+	}
+
+	public void sending(JsonObject json) {
+
+		System.out.println(index);
+		json.addProperty("empId", empList.get(index).getId());
+		json.addProperty("empName", empList.get(index).getName());
+		json.addProperty("empSalary", empList.get(index).getSalary());
+		json.addProperty("empJob", empList.get(index).getJob());
 	}
 
 }
