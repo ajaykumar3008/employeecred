@@ -13,7 +13,7 @@
 
 <h1 align='center'>Employee Details</h1><br><br>
 
-<form  align='center' id='employeeForm'>
+<form  align='center' id='employeeForm' action="http://localhost:8081/Employee/employee" method="get">
     <label for="empID">Employee ID:</label>
    <input type="text" id="empID" name="empID"><br><br>
     
@@ -26,8 +26,16 @@
     <label for="job">Job:</label>
     <input type="text" id="job" name="job"><br><br>
     
-    <button onclick="firstValue()">First</button>
-     <button onclick="nextValue()">Next</button>
+    <input type="submit" name="click" value="first">
+    <input type="submit" name="click" value="next">
+    <input type="submit" name="click" value="prev">
+    <input type="submit" name="click" value="last">
+    <input type="submit" name="click" value="edit">
+    <input type="submit" name="click" value="save">
+    <input type="submit" name="click" value="clear">
+    <input type="submit" name="click" value="delete">
+    <input type="submit" name="click" value="first">
+    
 </form>
 </div>
 <script>
@@ -49,45 +57,33 @@ xhr.onreadystatechange = function() {
 
 xhr.send();
 
-function firstValue(){
+
+document.getElementById("employeeForm").addEventListner("submit",function(event){
 	
-	const xhr = new XMLHttpRequest();
-
-	xhr.open('GET', `http://localhost:8081/Employee/EmployeeData?button="first"`, true);
-
-	xhr.onreadystatechange = function() {
-	    if (xhr.readyState === 4 && xhr.status === 200) {
-	        var res = JSON.parse(xhr.responseText);
+	const form=event.target;
+	const formData=new formData(form);
+	
+	var xhr=new XMLHttpRequest();
+	xhr.open(form.method,form.action,true);
+	
+	xhr.onreadystatechange=function(){
+		
+		if(xhr.readState===4&&xhr.status===200){
+			
+			var res = JSON.parse(xhr.responseText);
 	        document.getElementById('empID').value = res.empId; 
 	        document.getElementById('empName').value = res.empName;
 	        document.getElementById('salary').value = res.empSalary;
 	        document.getElementById('job').value = res.empJob;
-	    }
+		}
+		
+		
 	};
-
-	xhr.send();
 	
-}
-function nextValue(val){
+	xhr.send(formData);
 	
-	console.log("ajay");
-	const xhr = new XMLHttpRequest();
+});
 
-	xhr.open('GET', `http://localhost:8081/Employee/EmployeeData?button="next"`, true);
-
-	xhr.onreadystatechange = function() {
-	    if (xhr.readyState === 4 && xhr.status === 200) {
-	        var res = JSON.parse(xhr.responseText);
-	        document.getElementById('empID').value = res.empId; 
-	        document.getElementById('empName').value = res.empName;
-	        document.getElementById('salary').value = res.empSalary;
-	        document.getElementById('job').value = res.empJob;
-	    }
-	};
-
-	xhr.send();
-	
-}
 
 
 </script>
