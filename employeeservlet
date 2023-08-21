@@ -1,21 +1,23 @@
-package empDetails;
+package booking;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-
+import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-@WebServlet("/employee")
+@WebServlet("/emp")
 public class EmployeeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -25,21 +27,24 @@ public class EmployeeServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		System.out.println(1);
 
 		try {
-
+			System.out.println(1);
 			Class.forName("org.postgresql.Driver");
-			Connection con = DriverManager.getConnection("jdbc:postgresql://192.168.110.48:5432/plf_training",
-					"plf_training_admin", "pff123");
+
+			Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ajay",
+					"postgres", "Maddineni@123");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("select * from empp_p");
+			ResultSet rs = st.executeQuery("select * from emp");
 
 			while (rs.next()) {
 
 				int num = Integer.parseInt(rs.getString(1));
+				System.out.println(num);
 				String name = rs.getString(2);
-				String job = rs.getString(3);
-				double salary = Double.parseDouble(rs.getString(4));
+				double salary = Double.parseDouble(rs.getString(3));
+				String job = rs.getString(4);
 				Employee e = new Employee(num, name, salary, job);
 
 				empList.add(e);
@@ -93,6 +98,54 @@ public class EmployeeServlet extends HttpServlet {
 			sending(json);
 			response.setContentType("application/json");
 			response.getWriter().write(json.toString());
+		}
+		else if("save".equals(click)) {
+			
+			int id=Integer.parseInt(request.getParameter("id"));
+			String name=request.getParameter("name");
+			double salary=Double.parseDouble(request.getParameter("sal"));
+			String job=request.getParameter("job");
+
+			try {
+				System.out.println(1);
+				Class.forName("org.postgresql.Driver");
+
+				Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ajay",
+						"postgres", "Maddineni@123");
+				PreparedStatement ps = con.prepareStatement("insert into emp(id,name,salary,job) values(?,?,?,?)");
+				
+				ps.setInt(1,id);
+				ps.setString(2, name);
+				ps.setDouble(3, salary);
+				ps.setString(4,job);
+				
+				int success=ps.executeUpdate();
+				System.out.println(success);
+				response.getWriter().write(success);
+		}catch(Exception e){
+			
+		}
+		}
+		else if("delete".equals(click)) {
+			
+			int id=Integer.parseInt(request.getParameter("id"));
+			
+
+			try {
+				System.out.println(1);
+				Class.forName("org.postgresql.Driver");
+
+				Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ajay",
+						"postgres", "Maddineni@123");
+				Statement st=con.createStatement();
+				String s="delete from emp where id="+id;
+				int success=st.executeUpdate(s);
+				System.out.println(success);
+				response.getWriter().write(success);
+		}catch(Exception e){
+			
+		}
+			
 		}
 
 	}
